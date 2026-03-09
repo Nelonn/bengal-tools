@@ -1,0 +1,25 @@
+{
+  "name": "bengal-language",
+  "displayName": "Bengal Language",
+  "description": "Syntax highlighting for Bengal",
+  "version": "0.0.1",
+  "engines": { "vscode": "^1.74.0" },
+  "categories": ["Programming Languages"],
+  "contributes": {
+    "languages": [
+      {
+        "id": "bengal",
+        "aliases": ["Bengal", "bengal"],
+        "extensions": [".bl"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "bengal",
+        "scopeName": "source.bengal",
+        "path": "./syntaxes/Bengal.tmLanguage.json"
+      }
+    ]
+  }
+}
