@@ -10,6 +10,12 @@
       "include": "#strings"
     },
     {
+      "include": "#interpolation"
+    },
+    { 
+      "include": "#imports"
+    },
+    {
       "include": "#keywords"
     },
     {
@@ -32,20 +38,65 @@
         {
           "name": "comment.block.bengal",
           "begin": "/\\*",
-          "end": "\\*/"
+          "end": "\\*/",
+          "patterns": [
+            {
+              "include": "#comments"
+            }
+          ]
         }
       ]
     },
     "strings": {
       "patterns": [
         {
+          "name": "string.quoted.triple.bengal",
+          "begin": "\"\"\"",
+          "end": "\"\"\"",
+          "patterns": [
+            { "include": "#interpolation" },
+            {
+              "name": "constant.character.escape.bengal",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
           "name": "string.quoted.double.bengal",
           "begin": "\"",
           "end": "\"",
           "patterns": [
+            { "include": "#interpolation" },
             {
               "name": "constant.character.escape.bengal",
               "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "interpolation": {
+      "patterns": [
+        {
+          "name": "meta.interpolation.bengal",
+          "begin": "\\$\\{",
+          "end": "\\}",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.template-expression.begin.bengal" }
+          },
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.template-expression.end.bengal" }
+          },
+          "patterns": [
+            { "include": "#comments" },
+            { "include": "#strings" },
+            { "include": "#keywords" },
+            { "include": "#functions" },
+            { "include": "#types" },
+            { "include": "#numbers" },
+            {
+              "name": "variable.other.bengal",
+              "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
             }
           ]
         }
@@ -55,7 +106,11 @@
       "patterns": [
         {
           "name": "keyword.control.bengal",
-          "match": "\\b(if|else|while|for|return|break|continue|match|fn|let|var|const|import|from|as|struct|enum|use|module|self|true|false|null)\\b"
+          "match": "\\b(if|else|while|for|return|break|try|catch|throw|private|continue|match|native|fn|let|async|await|const|as|class|enum|use|self)\\b"
+        },
+        {
+          "name": "constant.language.bengal",
+          "match": "\\b(true|false|null)\\b"
         },
         {
           "name": "keyword.operator.bengal",
@@ -92,6 +147,26 @@
         {
           "name": "constant.numeric.float.bengal",
           "match": "\\b\\d+\\.\\d+\\b"
+        }
+      ]
+    },
+    "imports": {
+      "patterns": [
+        {
+          "name": "meta.import.bengal",
+          "match": "\\b(import)\\s+([a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z_][a-zA-Z0-9_]*)*)",
+          "captures": {
+            "1": { "name": "keyword.control.import.bengal" },
+            "2": { "name": "entity.name.namespace.bengal" }
+          }
+        },
+        {
+          "name": "meta.module.bengal",
+          "match": "\\b(module)\\s+([a-zA-Z_][a-zA-Z0-9_]*(?:::[a-zA-Z_][a-zA-Z0-9_]*)*)",
+          "captures": {
+            "1": { "name": "keyword.control.module.bengal" },
+            "2": { "name": "entity.name.namespace.bengal" }
+          }
         }
       ]
     }
