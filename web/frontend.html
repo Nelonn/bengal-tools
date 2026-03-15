@@ -231,30 +231,74 @@
                 <textarea id="source-code" placeholder="Enter Bengal code here..." spellcheck="false" oninput="updateHighlighting()" onscroll="syncScroll()"></textarea>
             </div>
         </div>
-        
+
         <div class="output-pane">
             <div class="pane-header">Bytecode Output</div>
             <div class="output-container">
-                <div id="assembly-output">; Compile Bengal code to see bytecode output</div>
+                <div id="assembly-output">; Loading WASM compiler...</div>
             </div>
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import init, { compile, get_version } from './wasm/pkg/bengal_godbolt_wasm.js';
+
         const textarea = document.getElementById('source-code');
         const lineNumbers = document.getElementById('line-numbers');
         const codeHighlight = document.getElementById('code-highlight');
         const output = document.getElementById('assembly-output');
-        
+
         // Debounce timer for auto-compilation
         let compileTimer = null;
         const COMPILE_DELAY = 300; // ms
-        
+
+        // Initialize WASM module
+        async function initWasm() {
+            try {
+                await init();
+                console.log('WASM initialized:', get_version());
+                output.innerHTML = '<span class="success">; WASM compiler ready - ' + get_version() + '</span>';
+                // Trigger initial compile if there's code
+                if (textarea.value.trim()) {
+                    compile();
+                }
+            } catch (e) {
+                output.innerHTML = '<span class="error">Failed to load WASM: ' + escapeHtml(e.message) + '</span>';
+            }
+        }
+
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
+
+        function updateHighlighting() {
+            const code = textarea.value;
+            codeHighlight.innerHTML = highlightCode(code) + '<br>';
+            updateLineNumbers();
+        }
+
+        function updateLineNumbers() {
+            const lines = textarea.value.split('\n').length;
+            lineNumbers.innerHTML = Array.from({length: lines}, (_, i) => i + 1).join('<br>');
+        }
+
+        function syncScroll() {
+            lineNumbers.scrollTop = textarea.scrollTop;
+            codeHighlight.scrollTop = textarea.scrollTop;
+            codeHighlight.scrollLeft = textarea.scrollLeft;
+        }
+
+        // Debounced compile - triggers after user stops typing
+        function scheduleCompile() {
+            if (compileTimer) {
+                clearTimeout(compileTimer);
+            }
+            compileTimer = setTimeout(compile, COMPILE_DELAY);
+        }
+
+        initWasm();
         
         function highlightCode(code) {
             // Token-based highlighting following Bengal.tmLanguage.json
@@ -458,7 +502,7 @@
             str = str.replace(/(\$\{[^}]*\})/g, '<span class="interpolation">$1</span>');
             return str;
         }
-        
+
         function highlightInterpolation(str) {
             // Highlight interpolation contents with nested syntax (meta.interpolation.bengal)
             // ${ ... } - highlight the braces and contents
@@ -467,38 +511,15 @@
             return '<span class="interpolation-punct">${</span>' + highlightedContent + '<span class="interpolation-punct">}</span>';
         }
         
-        function updateHighlighting() {
-            const code = textarea.value;
-            codeHighlight.innerHTML = highlightCode(code) + '<br>';
-            updateLineNumbers();
-        }
-        
-        function updateLineNumbers() {
-            const lines = textarea.value.split('\n').length;
-            lineNumbers.innerHTML = Array.from({length: lines}, (_, i) => i + 1).join('<br>');
-        }
-        
-        function syncScroll() {
-            lineNumbers.scrollTop = textarea.scrollTop;
-            codeHighlight.scrollTop = textarea.scrollTop;
-            codeHighlight.scrollLeft = textarea.scrollLeft;
-        }
-        
         async function compile() {
             const source = textarea.value;
             const unsafeFast = document.getElementById('unsafe-fast').checked;
-            
+
             output.innerHTML = '<span class="loading">; Compiling...</span>';
-            
+
             try {
-                const response = await fetch('/compile', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ source, unsafe_fast: unsafeFast })
-                });
-                
-                const result = await response.json();
-                
+                const result = compile(source, unsafeFast);
+
                 if (result.success) {
                     let html = '';
                     const lines = result.assembly.split('\n');
@@ -527,7 +548,7 @@
             }
             compileTimer = setTimeout(compile, COMPILE_DELAY);
         }
-        
+
         textarea.addEventListener('keydown', (e) => {
             if (e.ctrlKey && e.key === 'Enter') {
                 e.preventDefault();
@@ -543,16 +564,15 @@
                 scheduleCompile();
             }
         });
-        
+
         // Auto-compile on input changes
         textarea.addEventListener('input', () => {
             updateHighlighting();
             scheduleCompile();
         });
-        
-        // Initial compile
+
+        // Initial compile and highlighting
         updateHighlighting();
-        scheduleCompile();
     </script>
 </body>
 </html>
