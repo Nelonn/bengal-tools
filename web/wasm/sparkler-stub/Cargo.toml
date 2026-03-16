@@ -1,8 +1,0 @@
-[package]
-name = "sparkler"
-version = "0.1.0"
-edition = "2021"
-description = "Virtual machine for Bengal language (WASM stub)"
-
-[dependencies]
-serde = { version = "1.0", features = ["derive"] }

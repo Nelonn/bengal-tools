@@ -1,14 +1,13 @@
 [package]
-name = "bengal-godbolt"
+name = "bengal-web"
 version = "0.1.0"
 edition = "2021"
 description = "Godbolt-like compiler explorer for Bengal language"
 
-[workspace]
-members = ["wasm"]
-
 [dependencies]
-axum = "0.7"
-tokio = { version = "1", features = ["full"] }
-tower = "0.4"
-tower-http = { version = "0.5", features = ["fs", "trace", "mime_guess"] }
+yew = { version = "0.23", features = ["csr"] }
+bengal-compiler = { git = "https://github.com/Nelonn/bengal", subdirectory = "compiler" }
+sparkler = { git = "https://github.com/Nelonn/bengal", subdirectory = "sparkler", features = ["wasm"] }
+wasm-bindgen = "0.2"
+web-sys = { version = "0.3", features = ["HtmlDivElement", "HtmlInputElement", "HtmlTextAreaElement", "Window", "Event", "EventTarget"] }
+console_error_panic_hook = "0.1"
