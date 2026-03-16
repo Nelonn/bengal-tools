@@ -1,0 +1,27 @@
+[package]
+name = "bengal-godbolt-wasm"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "0.2"
+console_error_panic_hook = "0.1"
+serde = { version = "1", features = ["derive"] }
+serde-wasm-bindgen = "0.6"
+
+# Bengal compiler from git
+bengal-compiler = { git = "https://github.com/Nelonn/bengal", subdirectory = "compiler" }
+sparkler = { git = "https://github.com/Nelonn/bengal", subdirectory = "sparkler" }
+
+# Patch sparkler to use a WASM-compatible version
+[patch."https://github.com/Nelonn/bengal"]
+sparkler = { path = "./sparkler-stub" }
+
+[profile.release]
+opt-level = "s"
+lto = true
