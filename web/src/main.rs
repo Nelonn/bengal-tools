@@ -104,11 +104,11 @@ fn App() -> Html {
     let formatted_output = use_memo((output.clone(),), |(output,)| format_output(output));
 
     html! {
-        <div class="app-container">
-            <header class="app-header">
-                <h1>{ "🎇 Bengal Compiler Explorer" }</h1>
+        <div style="display: flex; flex-direction: column; height: 100vh; font-family: monospace;">
+            <header style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: #1e1e1e; color: white;">
+                <h1 style="margin: 0; font-size: 1.5rem;">{ "🎇 Bengal Compiler Explorer" }</h1>
                 <div class="options">
-                    <label class="checkbox-label">
+                    <label class="checkbox-label" style="display: flex; align-items: center; gap: 0.5rem;">
                         <input
                             type="checkbox"
                             checked={*unsafe_fast}
@@ -119,24 +119,24 @@ fn App() -> Html {
                 </div>
             </header>
 
-            <div class="main-container">
-                <div class="editor-pane">
-                    <div class="pane-header">{ "Source Code" }</div>
-                    <div class="editor-container">
+            <div style="display: flex; flex: 1; overflow: hidden;">
+                <div style="display: flex; flex-direction: column; flex: 1; padding: 0.5rem;">
+                    <div style="padding: 0.5rem; background: #2d2d2d; color: #ccc; font-weight: bold;">{ "Source Code" }</div>
+                    <div style="display: flex; flex: 1; overflow: hidden; position: relative;">
                         <div
                             ref={line_numbers_ref}
-                            class="line-numbers"
+                            style="padding: 1rem; background: #1e1e1e; color: #666; text-align: right; user-select: none; min-width: 3rem;"
                         >
                             { (*line_numbers).clone() }
                         </div>
                         <div
                             ref={highlight_ref}
-                            class="code-highlight"
+                            style="position: absolute; top: 0; left: 4rem; right: 0; bottom: 0; padding: 1rem; color: #d4d4d4; pointer-events: none; white-space: pre; overflow: hidden;"
                             dangerously_set_inner_html={(*highlighted_code).clone()}
                         ></div>
                         <textarea
                             ref={textarea_ref}
-                            class="source-code"
+                            style="position: absolute; top: 0; left: 4rem; right: 0; bottom: 0; padding: 1rem; background: transparent; color: transparent; caret-color: white; border: none; outline: none; resize: none; font-family: monospace; font-size: 14px; line-height: 1.5;"
                             value={(*source).clone()}
                             oninput={on_source_change}
                             spellcheck="false"
@@ -145,11 +145,12 @@ fn App() -> Html {
                     </div>
                 </div>
 
-                <div class="output-pane">
-                    <div class="pane-header">{ "Bytecode Output" }</div>
-                    <div class="output-container">
+                <div style="display: flex; flex-direction: column; flex: 1; padding: 0.5rem; border-left: 1px solid #333;">
+                    <div style="padding: 0.5rem; background: #2d2d2d; color: #ccc; font-weight: bold;">{ "Bytecode Output" }</div>
+                    <div style="flex: 1; overflow: auto; background: #1e1e1e; padding: 1rem;">
                         <div
                             class="assembly-output"
+                            style="color: #d4d4d4; white-space: pre; font-family: monospace; font-size: 14px; line-height: 1.5;"
                             dangerously_set_inner_html={(*formatted_output).clone()}
                         ></div>
                     </div>
@@ -157,7 +158,7 @@ fn App() -> Html {
             </div>
 
             if *is_compiling {
-                <div class="compiling-indicator">{ "Compiling..." }</div>
+                <div style="position: fixed; bottom: 1rem; right: 1rem; background: #007acc; color: white; padding: 0.5rem 1rem; border-radius: 4px;">{ "Compiling..." }</div>
             }
         </div>
     }
@@ -187,7 +188,8 @@ fn format_output(output: &str) -> String {
     for line in output.lines() {
         if line.trim().is_empty() {
             html.push_str("<br>");
-        } else if line.trim().starts_with(';') {
+        } else if line.trim().starts_with('#') {
+            // Bytecode viewer uses # for comments
             html.push_str(&format!(
                 "<span class=\"comment\">{}</span><br>",
                 escape_html(line)
