@@ -136,7 +136,7 @@ fn App() -> Html {
                         ></div>
                         <textarea
                             ref={textarea_ref}
-                            style="position: absolute; top: 0; left: 4rem; right: 0; bottom: 0; padding: 1rem; background: transparent; color: rgba(0, 0, 0, 0); caret-color: white; border: none; outline: none; resize: none; font-family: monospace; font-size: 14px; line-height: 1.5;"
+                            style="position: absolute; top: 0; left: 4rem; right: 0; bottom: 0; padding: 1rem; background: transparent; color: white; caret-color: white; border: none; outline: none; resize: none; font-family: monospace; font-size: 14px; line-height: 1.5;"
                             value={(*source).clone()}
                             oninput={on_source_change}
                             spellcheck="false"
