@@ -1,6 +1,5 @@
-mod bytecode_viewer;
-
 use bengal_compiler::compiler::{Compiler, CompilerOptions};
+use bytecode_viewer;
 use wasm_bindgen::closure::Closure;
 use wasm_bindgen::JsCast;
 use web_sys::{HtmlDivElement, HtmlInputElement, HtmlTextAreaElement, Window};

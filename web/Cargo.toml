@@ -7,7 +7,8 @@ description = "Godbolt-like compiler explorer for Bengal language"
 [dependencies]
 yew = { version = "0.23", features = ["csr"] }
 bengal-compiler = { git = "https://github.com/Nelonn/bengal", subdirectory = "compiler" }
-sparkler = { git = "https://github.com/Nelonn/bengal", subdirectory = "sparkler", features = ["wasm"] }
+#sparkler = { git = "https://github.com/Nelonn/bengal", subdirectory = "sparkler", features = ["wasm"] }
+bytecode-viewer = { git = "https://github.com/Nelonn/bengal", subdirectory = "bytecode-viewer"}
 wasm-bindgen = "0.2"
 web-sys = { version = "0.3", features = ["HtmlDivElement", "HtmlInputElement", "HtmlTextAreaElement", "Window", "Event", "EventTarget"] }
 console_error_panic_hook = "0.1"
