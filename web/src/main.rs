@@ -5,6 +5,7 @@ use wasm_bindgen::closure::Closure;
 use wasm_bindgen::JsCast;
 use web_sys::{HtmlDivElement, HtmlInputElement, HtmlTextAreaElement, Window};
 use yew::prelude::*;
+use yew::virtual_dom::VNode;
 
 #[function_component]
 fn App() -> Html {
@@ -103,6 +104,12 @@ fn App() -> Html {
 
     let formatted_output = use_memo((output.clone(),), |(output,)| format_output(output));
 
+    // Convert highlighted HTML strings into Yew VNodes via Html::from_html_unchecked
+    let highlighted_vnode: VNode =
+        Html::from_html_unchecked(AttrValue::from((*highlighted_code).clone()));
+    let output_vnode: VNode =
+        Html::from_html_unchecked(AttrValue::from((*formatted_output).clone()));
+
     html! {
         <div style="display: flex; flex-direction: column; height: 100vh; font-family: monospace;">
             <style>{r#"
@@ -151,12 +158,13 @@ fn App() -> Html {
                         </div>
                         <div
                             ref={highlight_ref}
-                            style="position: absolute; top: 0; left: 4rem; right: 0; bottom: 0; padding: 1rem; color: #ffffff; pointer-events: none; white-space: pre; overflow: hidden;"
-                            dangerously_set_inner_html={(*highlighted_code).clone()}
-                        ></div>
+                            style="position: absolute; top: 0; left: 4rem; right: 0; bottom: 0; padding: 1rem; pointer-events: none; white-space: pre; overflow: hidden; line-height: 1.5; font-family: monospace; font-size: 14px; background: #1e1e1e;"
+                        >
+                            { highlighted_vnode }
+                        </div>
                         <textarea
                             ref={textarea_ref}
-                            style="position: absolute; top: 0; left: 4rem; right: 0; bottom: 0; padding: 1rem; background: transparent; color: white; caret-color: white; border: none; outline: none; resize: none; font-family: monospace; font-size: 14px; line-height: 1.5;"
+                            style="position: absolute; top: 0; left: 4rem; right: 0; bottom: 0; padding: 1rem; background: transparent; color: transparent; caret-color: white; border: none; outline: none; resize: none; font-family: monospace; font-size: 14px; line-height: 1.5; z-index: 1;"
                             value={(*source).clone()}
                             oninput={on_source_change}
                             spellcheck="false"
@@ -171,8 +179,9 @@ fn App() -> Html {
                         <div
                             class="assembly-output"
                             style="color: #d4d4d4; white-space: pre-wrap; font-family: monospace; font-size: 14px; line-height: 1.5;"
-                            dangerously_set_inner_html={(*formatted_output).clone()}
-                        >{formatted_output}</div>
+                        >
+                            { output_vnode }
+                        </div>
                     </div>
                 </div>
             </div>
@@ -518,7 +527,7 @@ fn tokenize(code: &str) -> Vec<Token> {
             if [
                 "==", "!=", "<=", ">=", "&&", "||", "<<", ">>", "->", "=>", "::",
             ]
-            .contains(&two_char.as_str())
+                .contains(&two_char.as_str())
             {
                 tokens.push(Token {
                     token_type: TokenType::KeywordOperator,
