@@ -125,7 +125,7 @@ fn App() -> Html {
                     <div style="display: flex; flex: 1; overflow: hidden; position: relative;">
                         <div
                             ref={line_numbers_ref}
-                            style="padding: 1rem; background: #1e1e1e; color: #666; text-align: right; user-select: none; min-width: 3rem;"
+                            style="padding: 1rem; background: #1e1e1e; color: #666; text-align: right; user-select: none; min-width: 3rem; white-space: pre; line-height: 1.5;"
                         >
                             { (*line_numbers).clone() }
                         </div>
