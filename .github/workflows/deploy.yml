@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feat/godbolt-dep
     paths:
       - 'web/**'
   workflow_dispatch:
