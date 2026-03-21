@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-      - feat/godbolt-dep
     paths:
       - 'web/**'
+      - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
 jobs:
