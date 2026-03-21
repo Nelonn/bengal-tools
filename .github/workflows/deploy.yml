@@ -20,24 +20,18 @@ jobs:
           toolchain: stable
           target: wasm32-unknown-unknown
 
-      - name: Install wasm-pack
-        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      - name: Install trunk
+        uses: jetli/trunk-action@v0.5.0
 
-      - name: Build WASM
+      - name: Build with trunk
         working-directory: ./web
-        run: wasm-pack build --target web --release
-
-      - name: Prepare dist
-        run: |
-          mkdir -p dist
-          cp web/index.html dist/
-          cp web/pkg/* dist/
+        run: trunk build --release
 
       - name: Deploy to nelonn.github.io
         uses: peaceiris/actions-gh-pages@v4
         with:
           personal_token: ${{ secrets.TOKEN }}
-          publish_dir: ./dist
+          publish_dir: ./web/dist
           external_repository: nelonn/nelonn.github.io
           publish_branch: main
           force_orphan: true
