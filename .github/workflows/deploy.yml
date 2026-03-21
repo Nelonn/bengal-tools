@@ -1,0 +1,40 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - feat/godbolt-dep
+    paths:
+      - 'web/**'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          target: wasm32-unknown-unknown
+
+      - name: Install trunk
+        uses: jetli/trunk-action@v0.5.0
+
+      - name: Build with trunk
+        working-directory: ./web
+        run: trunk build --release
+
+      - name: Deploy to nelonn.github.io
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.PAGES_TOKEN }}
+          publish_dir: ./web/dist
+          destination_dir: bengal-web/${{ github.ref_name }}
+          external_repository: nelonn/nelonn.github.io
+          publish_branch: main
+          force_orphan: true
