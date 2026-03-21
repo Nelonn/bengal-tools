@@ -1,0 +1,45 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+      - feat/godbolt-dep
+    paths:
+      - 'web/**'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-action@stable
+        with:
+          toolchain: stable
+          target: wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Build WASM
+        working-directory: ./web
+        run: wasm-pack build --target web --release
+
+      - name: Prepare dist
+        run: |
+          mkdir -p dist
+          cp web/index.html dist/
+          cp web/pkg/* dist/
+
+      - name: Deploy to nelonn.github.io
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.TOKEN }}
+          publish_dir: ./dist
+          external_repository: nelonn/nelonn.github.io
+          publish_branch: main
+          force_orphan: true
