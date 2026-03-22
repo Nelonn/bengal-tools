@@ -27,7 +27,7 @@ jobs:
 
       - name: Build with trunk
         working-directory: ./web
-        run: trunk build --release
+        run: trunk build --release --public-url ./
 
       - name: Deploy to nelonn.github.io
         uses: peaceiris/actions-gh-pages@v4
